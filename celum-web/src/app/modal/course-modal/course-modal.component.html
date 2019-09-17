@@ -1,0 +1,30 @@
+<div class="modal-header">
+  <h4 class="modal-title">Create Course</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form>
+    <div class="form-group">
+      <label for="pwd">Name</label>
+      <input [(ngModel)]="currentCourse.name" class="form-control" id="pwd" name="name">
+    </div>
+
+    <div class="form-group">
+      <div class="input-group">
+        <input class="form-control" placeholder="yyyy-mm-dd" name="dp" [(ngModel)]="courseDate"
+          ngbDatepicker #d="ngbDatepicker">
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn-sm btn-success" (click)="closeModal(currentCourse)">
+    Save
+  </button>
+</div>

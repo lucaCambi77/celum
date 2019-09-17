@@ -1,0 +1,73 @@
+<div class="container">
+
+    <div class="row" style="margin: 2em">
+      <!-- Courses List-->
+  
+      <div class="col-sm-6">
+      <div class="card">
+          <div class="card-header">Courses List
+            <button (click)="openCourseFormModal()" type="button" class="btn-sm btn-success float-right">Add</button>
+          </div>
+  
+          <div class="table-responsive-lg" style="margin: 0.5em">
+            <table class="card-table table-bordered table-hover" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Name</th>
+                  <th>Start Date</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let course of courses">
+                  <td><button (click)="courseDetail(course)">{{course.courseId}}</button></td>
+                  <td>{{course.name}}</td>
+                  <td>{{course.startDate}}</td>
+                  <td><button (click)="deleteCourse(course.courseId)">X</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Course Detail-->
+      <div class="col-sm-6">
+        <div>
+          <div class="card">
+            <div class="card-header">Course Details
+              <button (click)="saveCourse(currentCourse)" type="button" class="btn-sm btn-success float-right">Save</button>
+            </div>
+            <div class="card-body">
+  
+              <div class="card">
+                <div class="card-header">Users
+                </div>
+                <div class="card-body">
+                  <ol>
+                    <li *ngFor="let userCheckBox of users">
+                      {{userCheckBox.user.name}} {{userCheckBox.user.lastName}} 
+                      <input type="checkbox" [(ngModel)]="userCheckBox.hasCourse">
+                    </li>
+                  </ol>
+                </div>
+              </div>
+              <form>
+                <div class="form-group">
+                  <label for="pwd">Name</label>
+                  <input [(ngModel)]="currentCourse.name" class="form-control" id="pwd" name="name">
+                </div>
+  
+                <div class="form-group">
+                  <label for="lastName">Start Date</label>
+                  <input [(ngModel)]="currentCourse.startDate" class="form-control" id="startDate" name="startDate">
+                </div>
+
+              </form>
+            </div>
+  
+  
+          </div>
+        </div>
+      </div>
+    </div>
