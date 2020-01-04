@@ -3,7 +3,6 @@
  */
 package it.cambi.celum.service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,133 +10,78 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import it.cambi.celum.mongo.model.Course;
 import it.cambi.celum.mongo.model.User;
 import it.cambi.celum.mongo.repository.CourseRepository;
-import it.cambi.celum.mongo.repository.UserRepository;
 
 /**
  * @author luca
  *
  */
 @Service
-public class CourseService {
-	private static final Logger log = LoggerFactory.getLogger(CourseService.class);
+public class CourseService
+{
+    private static final Logger log = LoggerFactory.getLogger(CourseService.class);
 
-	private @Autowired CourseRepository courseRepository;
-	private @Autowired UserRepository userRepository;
-	private @Autowired MongoTemplate mongoTemplate;
-	private @Autowired SequenceGeneratorService sequenceGenerator;
+    private @Autowired CourseRepository courseRepository;
+    private @Autowired UserService userService;
+    private @Autowired SequenceGeneratorService sequenceGenerator;
 
-	public List<Course> findAll() {
+    public List<Course> findAll()
+    {
 
-		return courseRepository.findAll();
-	}
+        return courseRepository.findAll();
+    }
 
-	public Course findById(Long id) {
-		return courseRepository.findById(id).get();
-	}
+    public Course findByObjectId(String _id)
+    {
 
-	public Course findByObjectId(String _id) {
-		Query query = new Query();
-		query.addCriteria(Criteria.where("_id").is(new ObjectId(_id)));
+        return courseRepository.findOneById(new ObjectId(_id)).orElseThrow(() -> new RuntimeException("Course does not exists"));
+    }
 
-		return mongoTemplate.findOne(query, Course.class);
-	}
+    public Course save(Course course)
+    {
 
-	public Course save(Course course) {
+        if (null == course.getId())
+            course.setCourseId(sequenceGenerator.generateSequence(Course.SEQUENCE_NAME));
 
-		/**
-		 * This version of mondo db doesn't return _id on save, so we get the course
-		 * from db after save
-		 */
-		if (null == course.get_id()) {
+        log.info("Creating / updating course " + course.getName());
 
-			course.setCourseId(sequenceGenerator.generateSequence(Course.SEQUENCE_NAME));
-			courseRepository.save(course);
-			course.set_id(findById(course.getCourseId()).get_id());
-		}
+        return courseRepository.save(course);
+    }
 
-		log.info("Creating / updating course " + course.getName());
+    public Course addUsers(String courseId, Set<String> users)
+    {
 
-		return addUsers(course);
-	}
+        Course course = findByObjectId(courseId);
 
-	public Course addUsers(Course course) {
+        Set<String> courseUsers = course.getUsers();
+        courseUsers.addAll(users);
+        course.setUsers(courseUsers);
 
-		/**
-		 * Find and update users
-		 */
-		Set<String> courseUsers = course.getUsers() == null ? new HashSet<String>() : course.getUsers();
+        users.stream().forEach(u -> {
+            User courseToUpdate = userService.findByObjectId(u);
 
-		List<User> users = userRepository.findAll();
+            Set<String> userCourses = courseToUpdate.getCourses();
+            userCourses.add(courseId);
+            courseToUpdate.setCourses(userCourses);
 
-		/**
-		 * If a course has a user, but it has been removed from the input, we remove it from the course.
-		 * Otherwise we add it anyway
-		 */
-		users.stream().forEach(u -> {
+            userService.save(courseToUpdate);
+        });
 
-			if (null != u.getCourses() && u.getCourses().stream().anyMatch(c -> c.equals(course.get_id()))
-					&& !courseUsers.contains(u.get_id())) {
+        return courseRepository.save(course);
 
-				Set<String> userCourses = u.getCourses();
-				if (null != userCourses) {
-					userCourses.remove(course.get_id());
-					u.setCourses(userCourses);
-					userRepository.save(u);
-				}
-			} else if (courseUsers.contains(u.get_id())) {
-				Set<String> userCourses = u.getCourses() == null ? new HashSet<String>() : u.getCourses();
-				userCourses.add(course.get_id());
-				u.setCourses(userCourses);
-				userRepository.save(u);
+    }
 
-			}
-		});
+    public void deleteById(String id)
+    {
+        log.info("Deleteing course id : " + id);
 
-		return courseRepository.save(course);
+        Course course = findByObjectId(id);
+        course.setDeleted(true);
 
-	}
-
-	public void deleteById(Long id) {
-		log.info("Deleteing course id : " + id);
-
-		Course course = findById(id);
-
-		/**
-		 * Find and update users
-		 */
-
-		if (null != course.getUsers()) {
-
-			Set<ObjectId> usersObjectId = new HashSet<ObjectId>();
-			course.getUsers().forEach(c -> usersObjectId.add(new ObjectId(c)));
-
-			Query query = new Query();
-			query.addCriteria(Criteria.where("_id").in(usersObjectId));
-
-			List<User> users = mongoTemplate.find(query, User.class);
-
-			if (null != users)
-				users.forEach(u -> {
-
-					if (null != u.getCourses()) {
-
-						log.info("Deleteing course : " + course.getName() + " from user " + u.getEmail());
-
-						u.getCourses().removeIf((c -> c != null && c.toString().equals(course.get_id().toString())));
-
-						userRepository.save(u);
-					}
-				});
-		}
-
-		courseRepository.deleteById(id);
-	}
+        courseRepository.save(course);
+    }
 }
