@@ -1,82 +1,78 @@
 /**
- * 
+ *
  */
 package it.cambi.celum.service;
 
-import java.util.List;
-import java.util.Set;
-
+import it.cambi.celum.mongo.model.Course;
+import it.cambi.celum.mongo.model.User;
+import it.cambi.celum.mongo.repository.CourseRepository;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import it.cambi.celum.mongo.model.Course;
-import it.cambi.celum.mongo.model.User;
-import it.cambi.celum.mongo.repository.CourseRepository;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author luca
  *
  */
 @Service
-public class CourseService
-{
+public class CourseService {
     private static final Logger log = LoggerFactory.getLogger(CourseService.class);
 
-    private @Autowired CourseRepository courseRepository;
-    private @Autowired UserService userService;
-    private @Autowired SequenceGeneratorService sequenceGenerator;
+    private @Autowired
+    CourseRepository courseRepository;
+    private @Autowired
+    UserService userService;
+    private @Autowired
+    SequenceGeneratorService sequenceGenerator;
 
-    public List<Course> findAll()
-    {
+    public List<Course> findAll() {
 
         return courseRepository.findAll();
     }
 
-    public Course findByObjectId(String _id)
-    {
+    public Course findByObjectId(String _id) {
 
         return courseRepository.findOneById(new ObjectId(_id)).orElseThrow(() -> new RuntimeException("Course does not exists"));
     }
 
-    public Course save(Course course)
-    {
+    public Course update(Course course) {
+        log.info("Updating course " + course.getName());
+        return courseRepository.save(course);
+    }
+
+    public Course save(Course course) {
 
         if (null == course.getId())
             course.setCourseId(sequenceGenerator.generateSequence(Course.SEQUENCE_NAME));
 
         log.info("Creating / updating course " + course.getName());
 
-        return courseRepository.save(course);
+        Course savedCourse = courseRepository.save(course);
+
+        addUsers(savedCourse.getId(), savedCourse.getUsers());
+
+        return savedCourse;
     }
 
-    public Course addUsers(String courseId, Set<String> users)
-    {
-
-        Course course = findByObjectId(courseId);
-
-        Set<String> courseUsers = course.getUsers();
-        courseUsers.addAll(users);
-        course.setUsers(courseUsers);
+    public void addUsers(String courseId, Set<String> users) {
 
         users.stream().forEach(u -> {
-            User courseToUpdate = userService.findByObjectId(u);
+            User userToUpdate = userService.findByObjectId(u);
 
-            Set<String> userCourses = courseToUpdate.getCourses();
+            Set<String> userCourses = userToUpdate.getCourses();
             userCourses.add(courseId);
-            courseToUpdate.setCourses(userCourses);
+            userToUpdate.setCourses(userCourses);
 
-            userService.save(courseToUpdate);
+            userService.save(userToUpdate);
         });
-
-        return courseRepository.save(course);
-
     }
 
-    public void deleteById(String id)
-    {
+    public void deleteById(String id) {
         log.info("Deleteing course id : " + id);
 
         Course course = findByObjectId(id);

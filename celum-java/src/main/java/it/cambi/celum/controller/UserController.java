@@ -68,11 +68,4 @@ public class UserController
     {
         userService.deleteById(id);
     }
-
-    @PutMapping("/addCourses/{userId}")
-    @ResponseStatus(HttpStatus.OK)
-    public void addCourses(@PathVariable String userId, @RequestParam("courses") Set<String> courses)
-    {
-        userService.addCourses(userId, courses);
-    }
 }

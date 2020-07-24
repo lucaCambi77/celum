@@ -1,11 +1,11 @@
 package it.cambi.celum;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.cambi.celum.mongo.model.Course;
+import it.cambi.celum.mongo.model.User;
+import it.cambi.celum.service.CourseService;
+import it.cambi.celum.service.UserService;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -18,28 +18,27 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
-import it.cambi.celum.mongo.model.Course;
-import it.cambi.celum.mongo.model.User;
-import it.cambi.celum.service.CourseService;
-import it.cambi.celum.service.UserService;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(classes = { Application.class,
-        ApplicationConfiguration.class }, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = {Application.class,
+        ApplicationConfiguration.class}, webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
-public class CelumApplicationTests
-{
+public class CelumApplicationTests {
 
     private static final Logger log = LoggerFactory.getLogger(CelumApplicationTests.class);
 
-    private @Autowired UserService userService;
+    private @Autowired
+    UserService userService;
 
-    private @Autowired CourseService courseService;
+    private @Autowired
+    CourseService courseService;
 
-    private static String mathObjectId;;
+    private static String mathObjectId;
 
     private static String mathematics = "Mathematics";
     private static String mathematicsUpdate = "MathematicsUpdate";
@@ -49,8 +48,7 @@ public class CelumApplicationTests
 
     @Test
     @Order(1)
-    public void persistCourse() throws JsonProcessingException
-    {
+    public void persistCourse() throws JsonProcessingException {
 
         Course course = new Course.Builder().withName(mathematics).withStarDate(new Date()).build();
 
@@ -68,48 +66,29 @@ public class CelumApplicationTests
 
     @Test
     @Order(2)
-    public void persistUser() throws JsonProcessingException
-    {
+    public void persistUser() throws JsonProcessingException {
 
-        User user = new User.Builder().withEmail("lucacambi77@gmail.com").withName("Luca").build();
+        String newUser = "newUser@gmail.com";
 
-        persistedUser = userService.save(user);
-
-        log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(persistedUser));
-
-        List<User> users = userService.findAll();
-
-        assertEquals(2, users.size());
-        assertEquals("lucacambi77@gmail.com", persistedUser.getEmail());
-
-    }
-
-    @SuppressWarnings("serial")
-    @Test
-    @Order(3)
-    public void addCourseToUser() throws JsonProcessingException
-    {
-
-        userService.addCourses(persistedUser.getId(), new HashSet<String>()
-        {
+        User userBuild = new User.Builder().withEmail(newUser).withName("New").withLastName("User").withCourses(new HashSet<String>() {
             {
                 add(mathObjectId);
             }
-        });
+        }).build();
 
-        List<User> users = userService.findAll();
+        persistedUser = userService.save(userBuild);
 
-        assertEquals(2, users.size());
+        log.info(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(persistedUser));
 
-        assertEquals(true, users.stream().filter(u -> u.getUserId() == persistedUser.getUserId()).findFirst()
-                .orElse(null).getCourses().stream().anyMatch(c -> c.toString().equals(mathObjectId.toString())));
+        User user = userService.findByObjectId(persistedUser.getId());
 
+        assertEquals(newUser, user.getEmail());
+        assertEquals(1, user.getCourses().size());
     }
 
     @Test
-    @Order(4)
-    public void updatedCourse() throws JsonProcessingException
-    {
+    @Order(3)
+    public void updatedCourse() {
 
         Course course = courseService.findByObjectId(mathObjectId);
         course.setName(mathematicsUpdate);
@@ -122,57 +101,27 @@ public class CelumApplicationTests
         assertEquals(1, courses.get(0).getCourseId());
         assertEquals(1, courses.get(0).getUsers().size());
         assertEquals(mathematicsUpdate, courses.get(0).getName());
-
-    }
-
-    @SuppressWarnings("serial")
-    @Test
-    @Order(5)
-    public void addUsersToCourse() throws JsonProcessingException
-    {
-
-        User user = new User.Builder().withEmail("lucacambi78@gmail.com").withName("Luca").build();
-
-        User persistedUser = userService.save(user);
-
-        courseService.addUsers(mathObjectId, new HashSet<String>()
-        {
-            {
-                add(persistedUser.getId());
-            }
-        });
-
-        List<Course> courses = courseService.findAll();
-
-        assertEquals(1, courses.size());
-        assertEquals(1, courses.get(0).getCourseId());
-        assertEquals(2, courses.get(0).getUsers().size());
-        assertEquals("MathematicsUpdate", courses.get(0).getName());
-
     }
 
     @Test
-    @Order(6)
-    public void deleteUser() throws JsonProcessingException
-    {
+    @Order(4)
+    public void deleteUser() {
 
         userService.deleteById(persistedUser.getId());
 
-        List<User> users = userService.findAll();
+        User user = userService.findByObjectId(persistedUser.getId());
 
-        assertEquals(users.stream().filter(u -> u.getId().equals(persistedUser.getId())).findFirst().get().isDeleted(), true);
+        assertEquals(user.isDeleted(), true);
     }
 
     @Test
-    @Order(7)
-    public void deleteCourse() throws JsonProcessingException
-    {
+    @Order(5)
+    public void deleteCourse() {
 
         courseService.deleteById(persistedCourse.getId());
 
         List<Course> courses = courseService.findAll();
 
         assertEquals(courses.stream().filter(u -> u.getId().equals(persistedCourse.getId())).findFirst().get().isDeleted(), true);
-
     }
 }
