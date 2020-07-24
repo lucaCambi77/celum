@@ -2,7 +2,7 @@ import { ObjectId } from './object-id';
 
 export class User {
 
-    _id: string;
+    id: string;
     userId: number;
     name: string;
     lastName: string;

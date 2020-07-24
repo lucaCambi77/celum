@@ -41,7 +41,7 @@ export class CoursesComponent implements OnInit {
         this.currentCourse.users.forEach(userObjectId => {
           usersCheckBox.hasCourse = false;
 
-          if (usersCheckBox.user._id === userObjectId)
+          if (usersCheckBox.user.id === userObjectId)
             usersCheckBox.hasCourse = true;
         });
       });
@@ -81,7 +81,7 @@ export class CoursesComponent implements OnInit {
 
     this.users.forEach(usersCheckBox => {
       if (usersCheckBox.hasCourse == true)
-        course.users.push(usersCheckBox.user._id);
+        course.users.push(usersCheckBox.user.id);
     });
 
     this.restApi.saveCourse(course).subscribe((data: {}) => {

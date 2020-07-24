@@ -65,16 +65,6 @@ export class RestApiService {
       )
   }
 
-  // HttpClient API delete() method => Delete user
-  addCourses(user: User) {
-    return this.http.post<User>(this.apiURL + '/user/addCourses/', JSON.stringify(user), this.httpOptions)
-      .pipe(
-        retry(1),
-        catchError(this.handleError)
-      )
-  }
-
-
   /*========================================
    CRUD Course for consuming RESTful API :
  =========================================*/
@@ -110,15 +100,6 @@ export class RestApiService {
   // HttpClient API delete() method => Delete course
   deleteCourse(id: number) {
     return this.http.delete<Course>(this.apiURL + '/course/' + id, this.httpOptions)
-      .pipe(
-        retry(1),
-        catchError(this.handleError)
-      )
-  }
-
-  // HttpClient API delete() method => addStudents to course
-  addUsers(course: Course) {
-    return this.http.post<User>(this.apiURL + '/course/addUsers/', JSON.stringify(course), this.httpOptions)
       .pipe(
         retry(1),
         catchError(this.handleError)

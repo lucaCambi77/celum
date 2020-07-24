@@ -40,13 +40,11 @@ export class UsersComponent implements OnInit {
     if (this.currentUser.courses) {
 
       this.currentUser.courses.forEach(userObjectId => {
-        this.courses.forEach(courseCheckBox => {
-          courseCheckBox.hasUser = false;
+        let course: CourseCheckBox = this.courses.filter(c => c.course.id === userObjectId)[0];
 
-          if (courseCheckBox.course._id === userObjectId)
-            courseCheckBox.hasUser = true;
+        if (course)
+          course.hasUser = true;
 
-        });
       });
     }
 
@@ -59,6 +57,7 @@ export class UsersComponent implements OnInit {
       this.courseData.forEach(course => {
         var checkBox = new CourseCheckBox();
         checkBox.course = course;
+        checkBox.hasUser = false;
         this.courses.push(checkBox);
       });
     })
@@ -84,7 +83,7 @@ export class UsersComponent implements OnInit {
 
     this.courses.forEach(courseCheckBox => {
       if (courseCheckBox.hasUser == true)
-        user.courses.push(courseCheckBox.course._id);
+        user.courses.push(courseCheckBox.course.id);
     });
 
     this.restApi.saveUser(user).subscribe((data: {}) => {
