@@ -49,12 +49,12 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-        addCourses(savedUser.getId(), savedUser.getCourses());
+        addToCourses(savedUser.getId(), savedUser.getCourses());
 
         return savedUser;
     }
 
-    public void addCourses(String userId, Set<String> courses) {
+    public void addToCourses(String userId, Set<String> courses) {
         courses.stream().forEach(c -> {
             Course courseToUpdate = courseService.findByObjectId(c);
 

@@ -1,30 +1,29 @@
 /**
- * 
+ *
  */
 package it.cambi.celum.mongo.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author luca
- * 
+ *
  *         ObjectId is a logical key and it is serialized as {@link ObjectId#toString()} and it works also as a reference (foreign key in relation
  *         databases). An auto incrementing sequence is created as a primary key in case also of a migration to a relational data base
  *
  */
 @Document(collection = "user")
-public class User
-{
+public class User {
 
-    private @MongoId ObjectId id;
+    private @MongoId
+    ObjectId id;
 
     @Transient
     public static final String SEQUENCE_NAME = "users_sequence";
@@ -41,9 +40,8 @@ public class User
     private boolean isDeleted;
 
     @JsonIgnoreType
-    public static class Builder
-    {
-        private long id;
+    public static class Builder {
+        private ObjectId id;
         private String name;
         private String lastName;
         private String address;
@@ -51,55 +49,47 @@ public class User
         private String email;
         private Set<String> courses;
 
-        public Builder withId(long id)
-        {
+        public Builder withId(ObjectId id) {
             this.id = id;
             return this;
         }
 
-        public Builder withName(String name)
-        {
+        public Builder withName(String name) {
             this.name = name;
             return this;
         }
 
-        public Builder withLastName(String lastName)
-        {
+        public Builder withLastName(String lastName) {
             this.lastName = lastName;
             return this;
         }
 
-        public Builder withAddress(String address)
-        {
+        public Builder withAddress(String address) {
             this.address = address;
             return this;
         }
 
-        public Builder withPhone(String phone)
-        {
+        public Builder withPhone(String phone) {
             this.phone = phone;
             return this;
         }
 
-        public Builder withEmail(String email)
-        {
+        public Builder withEmail(String email) {
             this.email = email;
             return this;
         }
 
-        public Builder withCourses(Set<String> courses)
-        {
+        public Builder withCourses(Set<String> courses) {
             this.courses = courses;
             return this;
         }
 
-        public User build()
-        {
+        public User build() {
 
             User user = new User();
             user.address = this.address;
             user.email = this.email;
-            user.userId = this.id;
+            user.id = this.id;
             user.name = this.name;
             user.phone = this.phone;
             user.courses = this.courses;
@@ -109,89 +99,72 @@ public class User
         }
     }
 
-    public long getUserId()
-    {
+    public long getUserId() {
         return userId;
     }
 
-    public void setUserId(long id)
-    {
+    public void setUserId(long id) {
         this.userId = id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getLastName()
-    {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName)
-    {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    public String getAddress()
-    {
+    public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address)
-    {
+    public void setAddress(String address) {
         this.address = address;
     }
 
-    public String getPhone()
-    {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone)
-    {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email)
-    {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public Set<String> getCourses()
-    {
+    public Set<String> getCourses() {
         return courses == null ? new HashSet<String>() : courses;
 
     }
 
-    public void setCourses(Set<String> courses)
-    {
+    public void setCourses(Set<String> courses) {
         this.courses = courses;
     }
 
-    public String getId()
-    {
+    public String getId() {
         return null == id ? null : id.toString();
     }
 
-    public boolean isDeleted()
-    {
+    public boolean isDeleted() {
         return isDeleted;
     }
 
-    public void setDeleted(boolean isDeleted)
-    {
+    public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 

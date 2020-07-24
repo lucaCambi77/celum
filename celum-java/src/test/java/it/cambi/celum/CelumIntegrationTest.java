@@ -28,9 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
         ApplicationConfiguration.class}, webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(OrderAnnotation.class)
-public class CelumApplicationTests {
+public class CelumIntegrationTest {
 
-    private static final Logger log = LoggerFactory.getLogger(CelumApplicationTests.class);
+    private static final Logger log = LoggerFactory.getLogger(CelumIntegrationTest.class);
 
     private @Autowired
     UserService userService;

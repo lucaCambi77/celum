@@ -1,12 +1,11 @@
 package it.cambi.celum;
 
+import it.cambi.celum.mongo.model.User;
+import it.cambi.celum.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-
-import it.cambi.celum.mongo.model.User;
-import it.cambi.celum.service.UserService;
 
 @SpringBootApplication
 public class Application {

@@ -3,12 +3,11 @@
  */
 package it.cambi.celum.mongo.repository;
 
-import java.util.Optional;
-
+import it.cambi.celum.mongo.model.User;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import it.cambi.celum.mongo.model.User;
+import java.util.Optional;
 
 /**
  * @author luca

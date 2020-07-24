@@ -3,19 +3,12 @@
  */
 package it.cambi.celum.relational.model;
 
-import static javax.persistence.GenerationType.SEQUENCE;
+import org.springframework.data.annotation.Id;
 
+import javax.persistence.*;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import org.springframework.data.annotation.Id;
+import static javax.persistence.GenerationType.SEQUENCE;
 
 /**
  * @author luca

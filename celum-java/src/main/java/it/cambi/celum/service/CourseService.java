@@ -73,7 +73,7 @@ public class CourseService {
     }
 
     public void deleteById(String id) {
-        log.info("Deleteing course id : " + id);
+        log.info("Deleting course id : " + id);
 
         Course course = findByObjectId(id);
         course.setDeleted(true);
