@@ -23,7 +23,7 @@ public class Course {
 	private long courseId;
 	private String name;
 	private Date startDate;
-	private Set<User> users;
+	private Set<UserCourse> users;
 
 	@Id
 	@SequenceGenerator(name = "courseSeqgenerator", sequenceName = "CELUM.COURSE_SEQ", allocationSize = 1)
@@ -55,12 +55,12 @@ public class Course {
 		this.startDate = startDate;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "users")
-	public Set<User> getUsers() {
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+	public Set<UserCourse> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Set<User> users) {
+	public void setUsers(Set<UserCourse> users) {
 		this.users = users;
 	}
 
