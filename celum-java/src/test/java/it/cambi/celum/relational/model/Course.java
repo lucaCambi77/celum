@@ -3,13 +3,12 @@
  */
 package it.cambi.celum.relational.model;
 
-import org.springframework.data.annotation.Id;
+import static javax.persistence.GenerationType.SEQUENCE;
 
-import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
-
-import static javax.persistence.GenerationType.SEQUENCE;
+import javax.persistence.*;
+import org.springframework.data.annotation.Id;
 
 /**
  * @author luca

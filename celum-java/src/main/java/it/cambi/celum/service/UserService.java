@@ -1,78 +1,76 @@
-/**
- *
- */
+/** */
 package it.cambi.celum.service;
 
 import it.cambi.celum.mongo.model.Course;
 import it.cambi.celum.mongo.model.User;
+import it.cambi.celum.mongo.repository.CourseRepository;
 import it.cambi.celum.mongo.repository.UserRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author luca
- *
  */
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    private @Autowired
-    UserRepository userRepository;
-    private @Autowired
-    CourseService courseService;
-    private @Autowired
-    SequenceGeneratorService sequenceGenerator;
+  private final UserRepository userRepository;
+  private final CourseRepository courseRepository;
+  private final SequenceGeneratorService sequenceGenerator;
 
-    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+  private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    public List<User> findAll() {
+  public List<User> findAll() {
+    return userRepository.findAll().stream()
+        .filter(u -> !u.isDeleted())
+        .collect(Collectors.toList());
+  }
 
-        return userRepository.findAll();
-    }
+  public User findByObjectId(String _id) {
+    return userRepository
+        .findOneById(new ObjectId(_id))
+        .orElseThrow(() -> new RuntimeException("User does not exists"));
+  }
 
-    public User findByObjectId(String _id) {
+  public User save(User user) {
+    if (null == user.getId())
+      user.setUserId((sequenceGenerator.generateSequence(User.SEQUENCE_NAME)));
 
-        return userRepository.findOneById(new ObjectId(_id)).orElseThrow(() -> new RuntimeException("User does not exists"));
-    }
+    log.info("Creating / updating user " + user.getEmail() + "with id " + user.getUserId());
 
-    public User save(User user) {
-        if (null == user.getId())
-            user.setUserId((sequenceGenerator.generateSequence(User.SEQUENCE_NAME)));
+    User savedUser = userRepository.save(user);
 
-        log.info("Creating / updating user " + user.getEmail() + "with id " + user.getUserId());
+    addToCourses(savedUser.getId(), savedUser.getCourses());
 
-        User savedUser = userRepository.save(user);
+    return savedUser;
+  }
 
-        addToCourses(savedUser.getId(), savedUser.getCourses());
+  public void addToCourses(String userId, Set<String> courses) {
+    courses.forEach(
+        c -> {
+          Course courseToUpdate = courseRepository.findOneById(new ObjectId(c)).get();
 
-        return savedUser;
-    }
+          Set<String> courseUsers = courseToUpdate.getUsers();
+          courseUsers.add(userId);
+          courseToUpdate.setUsers(courseUsers);
 
-    public void addToCourses(String userId, Set<String> courses) {
-        courses.stream().forEach(c -> {
-            Course courseToUpdate = courseService.findByObjectId(c);
-
-            Set<String> courseUsers = courseToUpdate.getUsers();
-            courseUsers.add(userId);
-            courseToUpdate.setUsers(courseUsers);
-
-            courseService.update(courseToUpdate);
+          courseRepository.save(courseToUpdate);
         });
-    }
+  }
 
-    public void deleteById(String id) {
-        log.info("Deleteing course id : " + id);
+  public void deleteById(String id) {
+    log.info("Deleteing course id : " + id);
 
-        User user = findByObjectId(id);
-        user.setDeleted(true);
+    User user = findByObjectId(id);
+    user.setDeleted(true);
 
-        userRepository.save(user);
-    }
-
+    userRepository.save(user);
+  }
 }

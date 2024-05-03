@@ -10,18 +10,21 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(Application.class, args);
+  }
 
-	@Bean
-	CommandLineRunner initialize(UserService userService) {
-		return args -> {
-
-			User fakeUser = new User.Builder().withAddress("Via Stelvio 13, Pistoia").withEmail("lucacambi77@gmail.com")
-					.withName("Luca").withLastName("Cambi").build();
-			userService.save(fakeUser);
-
-		};
-	}
+  @Bean
+  CommandLineRunner initialize(UserService userService) {
+    return args -> {
+      User fakeUser =
+          User.builder()
+              .address("Via Stelvio 13, Pistoia")
+              .email("lucacambi77@gmail.com")
+              .name("Luca")
+              .lastName("Cambi")
+              .build();
+      userService.save(fakeUser);
+    };
+  }
 }

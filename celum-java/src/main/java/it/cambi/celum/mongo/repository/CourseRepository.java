@@ -4,10 +4,9 @@
 package it.cambi.celum.mongo.repository;
 
 import it.cambi.celum.mongo.model.Course;
+import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
-import java.util.Optional;
 
 /**
  * @author luca
