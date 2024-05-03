@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ObjectId } from '../shared/object-id';
-import { User } from '../shared/user';
-import { Course } from '../shared/course';
-import { RestApiService } from "../shared/rest-api.service";
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { UserModalComponent } from '../modal/user-modal/user-modal.component';
+import {Component, OnInit} from '@angular/core';
+import {User} from '../shared/user';
+import {Course} from '../shared/course';
+import {RestApiService} from '../shared/rest-api.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {UserModalComponent} from '../modal/user-modal/user-modal.component';
 
 @Component({
   selector: 'app-users',
@@ -40,10 +39,11 @@ export class UsersComponent implements OnInit {
     if (this.currentUser.courses) {
 
       this.currentUser.courses.forEach(userObjectId => {
-        let course: CourseCheckBox = this.courses.filter(c => c.course.id === userObjectId)[0];
+        const course: CourseCheckBox = this.courses.filter(c => c.course.id === userObjectId)[0];
 
-        if (course)
+        if (course) {
           course.hasUser = true;
+        }
 
       });
     }
@@ -55,7 +55,7 @@ export class UsersComponent implements OnInit {
       this.courseData = data;
 
       this.courseData.forEach(course => {
-        var checkBox = new CourseCheckBox();
+        const checkBox = new CourseCheckBox();
         checkBox.course = course;
         checkBox.hasUser = false;
         this.courses.push(checkBox);
@@ -82,8 +82,9 @@ export class UsersComponent implements OnInit {
     user.courses = [];
 
     this.courses.forEach(courseCheckBox => {
-      if (courseCheckBox.hasUser == true)
+      if (courseCheckBox.hasUser == true) {
         user.courses.push(courseCheckBox.course.id);
+      }
     });
 
     this.restApi.saveUser(user).subscribe((data: {}) => {
@@ -112,7 +113,7 @@ export class UsersComponent implements OnInit {
 class CourseCheckBox {
 
   course: Course = new Course();
-  hasUser: boolean = false
+  hasUser = false;
 }
 
 

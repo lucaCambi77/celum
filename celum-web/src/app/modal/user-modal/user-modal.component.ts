@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { User } from 'src/app/shared/user';
+import {Component, OnInit} from '@angular/core';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {User} from 'src/app/shared/user';
 
 @Component({
   selector: 'app-user-modal',
@@ -9,14 +9,15 @@ import { User } from 'src/app/shared/user';
 })
 export class UserModalComponent implements OnInit {
 
-  currentUser:User = new User();
+  currentUser: User = new User();
 
-  constructor(public activeModal: NgbActiveModal) { }
+  constructor(public activeModal: NgbActiveModal) {
+  }
 
   ngOnInit() {
   }
 
-  closeModal(currentUser:User) {
+  closeModal(currentUser: User) {
     this.activeModal.close(currentUser);
   }
 }
