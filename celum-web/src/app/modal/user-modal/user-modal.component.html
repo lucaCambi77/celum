@@ -1,0 +1,39 @@
+<div class="modal-header">
+  <h4 class="modal-title">Create User</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <form>
+    <div class="form-group">
+      <label for="pwd">Name</label>
+      <input [(ngModel)]="currentUser.name" class="form-control" id="pwd" name="name">
+    </div>
+
+    <div class="form-group">
+      <label for="lastName">Last Name</label>
+      <input [(ngModel)]="currentUser.lastName" class="form-control" id="lastName" name="lastName">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email address:</label>
+      <input [(ngModel)]="currentUser.email" type="email" class="form-control" id="email" name="email">
+    </div>
+
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input [(ngModel)]="currentUser.phone" class="form-control" id="phone" name="phone">
+    </div>
+
+    <div class="form-group">
+      <label for="address">Address</label>
+      <input [(ngModel)]="currentUser.address" class="form-control" id="address" name="address">
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn-sm btn-success" (click)="closeModal(currentUser)">
+    Save
+  </button>
+</div>
